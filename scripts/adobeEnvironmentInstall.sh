@@ -5,6 +5,7 @@ CD=$(dirname $(readlink -f $0))
 install=$(readlink -f $1)
 shift
 
+export WINEPREFIX=$install/
 source $CD/run.sh
 
 mkdir -p $install/
