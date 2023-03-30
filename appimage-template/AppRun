@@ -1,0 +1,113 @@
+#!/bin/bash
+# =============================================================================
+# This script runs the wine application in a fuse unionfs mount, creating a
+# $HOME/.$APP where all the saved data into the drive_c of the windows
+# environment is stored.
+# It also supports setting a job/shot/user/$APP folder if a job/shot is set
+# in the shell. (pipeVFX support!)
+#
+# To set what .exe to run, just create a symlink of the .exe at
+# $CD/main.exe
+#
+# To set the name of the appimage, set it in the $APP environment below
+# =============================================================================
+
+# set the app name here!
+# this will be used to create a folder in a job/shot/user
+# and a ~/.$APP
+# booth are overlay folders over the appimage $WINEPREFIX
+APP=__APP__
+STUDIO=__STUDIO__
+
+
+_GID=$(id -g)
+_UID=$(id -u)
+CD=$(dirname $(readlink -f $0))
+export WINEPREFIX=$(readlink -f $CD/wineprefix/)
+
+# mount read only wineprefix
+# here we set the ~/.$APP folder and job/shot/user folder, if we're
+# in a job/shot!
+RW="$HOME/.$APP"
+MNT=$CD.$APP
+mkdir -p $MNT
+mkdir -p $RW
+# mkdir -p "$RW/drive_c/Program Files/Pixologic/ZBrush 2019/ZProjects"
+# rm -rf $RW/ZProjects
+# rm -rf $RW/QuickSave
+# ln -s "drive_c/Program Files/Pixologic/ZBrush 2019/ZProjects" $RW
+# ln -s "drive_c/users/Public/Documents/ZBrushData2019/QuickSave" $RW
+
+# cleanup local folder just in case, to avoid wine stop working
+rm -rf $RW/drive_c/Program\ Files*
+rm -rf $RW/dosdevices
+rm -rf $RW/*.reg
+
+# we use fuse unionfs to mount the writable folders over the
+# appimage prefix, since the appimage is read-only!
+# this also helps wine to see the appimage wineprefix as owned by
+# the current user, so wine is happy!!
+if [ "$PIPE_SHOT" == "" ] ; then
+	mkdir -p "$RW"
+	$CD/unionfs -o nonempty,auto_unmount,uid=$_UID,gid=$_GID,umask=0000 -ocow "$RW"=RW:"$WINEPREFIX"=RO "$MNT" || exit 1
+else
+	JOBRW=/atomo/jobs/$(echo "$PIPE_JOB/$PIPE_SHOT" | sed 's/\@/s\//')/users/$USER/$APP/
+	mkdir -p "$JOBRW"
+	# cleanup folder just in case, to avoid wine stop working
+	rm -rf $JOBRW/drive_c/Program\ Files*
+	rm -rf $JOBRW/dosdevices
+	rm -rf $JOBRW/*.reg
+	# mkdir -p "$JOBRW/drive_c/Program Files/Pixologic/ZBrush 2019/ZProjects"
+	# rm -rf $JOBRW/ZProjects
+	# rm -rf $JOBRW/QuickSave
+	# ln -s "drive_c/Program Files/Pixologic/ZBrush 2019/ZProjects" $JOBRW
+	# ln -s "drive_c/users/Public/Documents/ZBrushData2019/QuickSave" $JOBRW
+	$CD/unionfs -o nonempty,auto_unmount,uid=$_UID,gid=$_GID,umask=0000 -ocow "$JOBRW"=RW:"$RW"=RO:"$WINEPREFIX"=RO "$MNT" || exit 1
+fi
+
+# Set wineprefix here so run.sh can pick it up!
+unset TERM
+export WINEPREFIX=$MNT
+ln -s /$STUDIO/jobs  $WINEPREFIX/dosdevices/j\:
+if [ "$PIPE_SHOT" != "" ] ; then
+	JOBRW=/atomo/jobs/$(echo "$PIPE_JOB/$PIPE_SHOT" | sed 's/\@/s\//')/users/$USER/$APP/
+	ln -s $JOBRW  $WINEPREFIX/dosdevices/s\:
+fi
+echo "disable" > "$WINEPREFIX/.update-timestamp"
+
+# run the .exe.bak file instead of .exe, if -l is specified
+if [ "$1" == "-l" ] ; then
+	extra=".bak"
+	shift
+fi
+# bash -i -l
+$CD/run.sh wine64 "$(readlink -f $CD/main.exe)$extra" "$@" 2>&1 | grep -v fixme
+
+# finalizing and making sure everything closes and nothing is left hanging
+echo "Closing wine..."
+for n in {1..5} ; do
+	if [ "$(pgrep -fa '\\.exe|\.exe|wine|adobe' | egrep -v 'unionfs|rsync|rclone|ssh|bin.bash')" == "" ] ; then
+		break
+	fi
+	sleep 1 ; echo -n .
+done
+for n in {1..60} ; do
+	kill -9 $(pgrep -fa '\\.exe|\.exe|wine|adobe' | egrep -v 'unionfs|rsync|rclone|ssh|bin.bash' | awk '{print $1}') >/dev/null 2>&1
+	$CD/fusermount -u $MNT  >/dev/null 2>&1
+	killall unionfs >/dev/null 2>&1
+	rmdir $MNT  >/dev/null 2>&1
+	if [ $? -eq 0 ] ; then
+		break
+	fi
+	sleep 1 ; echo -n .
+done
+
+# cleanup local folder just in case, to avoid wine stop working
+rm -rf $RW/drive_c/Program\ Files*
+rm -rf $RW/dosdevices
+rm -rf $RW/*.reg
+if [ "$JOBRW" != "" ] ; then
+	rm -rf $JOBRW/drive_c/Program\ Files*
+	rm -rf $JOBRW/dosdevices
+	rm -rf $JOBRW/*.reg
+fi
