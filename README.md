@@ -9,12 +9,12 @@ Currently it's able to create a Photoshop appimage and a Substance Painter appim
 
 Run `make help` to see how to use it. 
 
-It requires a functional Windows Virtual Machine present in your local network, named adobe.local, with Adobe Creative Cloud software properly running, able to download and install the applications in the Windows Virtual Machine c:/Adobe folder. 
+It requires a functional Windows Virtual Machine present in your local network, named adobe.local, with Adobe Creative Cloud software properly running, able to download and install the applications in the Windows Virtual Machine `c:/Adobe` folder. 
 
 The Windows Virtual Machine needs:
   * isntall Windows 10 in your virtual machine, and use `adobe.local` as hostname and `game` as username. (the Makefile will try to login using `ssh game@adobe.local`)
   * install Cygwin ssh server + rsync. [You can follow this tutorial to install ssh server](https://7thzero.com/blog/how-to-install-cygwin-and-configure-ssh). When selecting `ssh` in the cygwin installer, don't forget to also select `rsync`.
-  * install Adobe Creative Cloud from adobe.com website, login and install what you want to pack as appimage. (for now, only photoshop and substance painter are available)
+  * install Adobe Creative Cloud from adobe.com website, login, set the installation folder for apps to `c:/Adobe` before installing what you want to pack as appimage.
 
 
 ## How it works
