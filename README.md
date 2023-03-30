@@ -1,105 +1,38 @@
-# Photoshop-CC2022-Linux
+# Adobe-Linux
 
-## Important
+This fork uses `make` to build self-contained appimages with wine+Adobe application and all the required dependencies so the Adobe Application runs in any linux distro. 
 
-**Please note that the GUI version might not work on your distribution. it worked with some older packager and has broken since. if you used the GUI and it hasn't worked, please try to use the CLI installer wieh a sh file in the RELEASE section. (avoid cloning as master branche can have experimental changes)**
-
-**DISCLAIMER :**
-**Please use this software only if you have an active Photoshop subscription. I'm not responsable of any use without subscription.**
-
-This git repo contains an installer for photoshop CC 2022 on linux with wine.
-
-Note that Photoshop CC 2022 isn't as stable as the CC2021 version on linux. If you need a production environement, concidere using PS2021 instead
-
-If you use something from my repo in your project please credit me
-
-| Version  | Rating |
-| ------------- | ------------- |
-| [CC 2021](https://github.com/MiMillieuh/Photoshop-CC2022-Linux/releases/tag/2.1.3)  | Works almost like on Windows  |
-| [CC 2022](https://github.com/MiMillieuh/Photoshop-CC2022-Linux/releases/tag/2.1.1)  | Not ready for production... Basic functions works, No GPU acceleration  |
-
-![Screenshot from 2022-05-17 00-02-27](https://user-images.githubusercontent.com/52078885/168690419-274020b0-c993-4b86-a58f-f0f07237aa4f.png)
-
-*File download is about 2GB*
-
-## Requirements
-- wine >=6.1 (Avoid 6.20 to 6.22 **DON'T USE STAGING**) 
-
-(Wine 8.0+ are causing an issue with the windows version see workaround [here](https://github.com/MiMillieuh/Photoshop-CC2022-Linux/issues/94#issuecomment-1426776219))
-- zenity
-- appmenu-gtk-module
-- tar
-- wget
-- curl
-- All R/W rights on your home folder and the installer folder
-- Vulkan capable GPU or APU (Older GPUs might encounter [This issue #100](https://github.com/MiMillieuh/Photoshop-CC2022-Linux/issues/100))
+Currently it's able to create a Photoshop appimage and a Substance Painter appimage.
 
 
-## Usage : 
+## Build
 
-**CLI :**
+Run `make help` to see how to use it. 
 
-`sh photoshop2022install.sh /path/to/your/install/folder`
+It requires a functional Windows Virtual Machine present in your local network, named adobe.local, with Adobe Creative Cloud software properly running, able to download and install the applications in the Windows Virtual Machine c:/Adobe folder. 
 
-**Camera Raw**
-You can install Camera Raw this way :
-
-`curl -L "https://download.adobe.com/pub/adobe/photoshop/cameraraw/win/12.x/CameraRaw_12_2_1.exe" > CameraRaw_12_2_1.exe`
-`WINEPREFIX=/Path/To/Your/Photoshop/Install/Adobe-Photoshop wine CameraRaw_12_2_1.exe`
-
-To use camera raw you need to change a settings
-Edit -> preferences -> Camera raw... -> performance -> Use graphic processor : Off
-
-If camera raw is sometimes grayed out, just go to : Edit -> preferences -> Tools, and uncheck show Tooltips.
+The Windows Virtual Machine needs:
+  * isntall Windows 10 in your virtual machine, and use `adobe.local` as hostname and `game` as username. (the Makefile will try to login using `ssh game@adobe.local`)
+  * install Cygwin ssh server + rsync. [You can follow this tutorial to install ssh server](https://7thzero.com/blog/how-to-install-cygwin-and-configure-ssh). When selecting `ssh` in the cygwin installer, don't forget to also select `rsync`.
+  * install Adobe Creative Cloud from adobe.com website, login and install what you want to pack as appimage. (for now, only photoshop and substance painter are available)
 
 
+## How it works
 
-**GUI :**
+The Makefile downloads the latest `wine` version directly from WineHQ website. It downloads the Ubuntu 18.04 version, for maximum compatibility with other distros.
 
-**THIS METHODE IS DEPRECATED PLEASE USE CLI**
+It then uses the downloaded wine to run a variation of `MiMillieuh/Photoshop-CC2022-Linux` scripts, which creates the wineprefixes for the required application. 
 
-Open photoshop installer :
+After that is done, the Makefile uses `rsync` to copy over the installed application from the `adobe.local` virtual machine, as well as other required folders like `C:/Program Files*/Adobe` and `C:/Program Files*/Common Files`. 
 
-![Screenshot from 2022-05-17 00-14-15](https://user-images.githubusercontent.com/52078885/168692144-a1819955-c541-4248-bca2-ef4ed248e4bf.png)
+Then it sets up an appimage folder based on the `appimage-template`, and creates the actual appimage file. 
 
-Click on install and chose the install folder (You must have acces to it):
+Once it's finish, running the application.appimage should launch the Adobe Application correctly, in Linux. 
 
-![Screenshot from 2022-05-17 00-14-56](https://user-images.githubusercontent.com/52078885/168692184-62e2c937-fa4b-43e8-ab8a-449015b42994.png)
+# Currently working
 
-Wait for the install (It can take a long time depending on your internet and computer speed) :
-
-![Screenshot from 2022-05-17 00-17-28](https://user-images.githubusercontent.com/52078885/168692197-c861e67a-01e0-436d-8169-6d23a0aa4edb.png)
-
-Once it's done you can close the window :
-
-![Screenshot from 2022-05-17 00-20-39](https://user-images.githubusercontent.com/52078885/168692210-7093c10d-310d-45f4-98fb-0d8eb25609f5.png)
-
-Then you can launch Photoshop :
-
-![Screenshot from 2022-05-17 00-21-04](https://user-images.githubusercontent.com/52078885/168692218-dd1dd912-83a8-4746-aafa-da7f0a9673c3.png)
-
-**Uninstalling :**
-
-To uninstall remove the photoshop desktop file in *~/.local/share/applications/* then your installation folder
-
-
-## Special thanks to
-- The WineHQ team : For making wine
-- Gictorbit : For initial inspiration
-- HansKristian-Work : For making VKD3D-Proton
-- Adobe : For making Photoshop (also please release an official version for linux...)
-
-
-
-
-## Donate
-
-This isn't necessary but it helps paying the hosting server
-
-
-
-BTC : 1LDKrdTKGHtGRjDSL2ULxGGzX4onL5YUsp
-
-ETH : 0x57bf06a94ead7b18beb237e9aec9ae3ef06fe29a
-
-BUSD : 0x57bf06a94ead7b18beb237e9aec9ae3ef06fe29a
+| Version  | Using Wine Version | Rating |
+| ------------- | ------------- | ------------- |
+| Photoshop 2022 | 8.4 | Works almost like on Windows  |
+| Photoshop 2023 | 8.4 |Launches but gives some DXVK errors - the canvas doesnt show correctly |
+| Substance Painter 8.3.0 | 8.4 | Works perfectly |
