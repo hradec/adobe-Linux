@@ -29,6 +29,20 @@ The Windows Virtual Machine needs:
 
 ## Build
 Run `make help` to see how to use it. 
+```
+make help                                         - display this help screen.
+make substance VERSION=<substance version number> - build substance appimage
+make photoshop VERSION=<photoshop version number> - build photoshop appimage
+make wine [WINE_VERSION=<version of wine>]        - downloads wine from wineHQ
+make winels                                       - list all versions of wine available for download
+make clean                                        - cleanup.
+make clean_folders                                - cleanup wine and wineprefixes.
+make clean_all                                    - cleanup appimages temporary folders.
+make nuke                                         - cleanup all temporary folders above + adobe applications folder.
+make pgrep                                        - display wine processes.
+make pkill                                        - kill wine processes.
+make pullvm                                       - pull all adobe apps from VM
+```
 
 ## How it works
 The Makefile downloads the latest `wine` version directly from WineHQ website. It downloads the Ubuntu 18.04 version, for maximum compatibility with other distros.
