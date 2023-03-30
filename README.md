@@ -1,24 +1,30 @@
 # Adobe-Linux
-
 This fork uses `make` to build self-contained appimages with wine+Adobe application and all the required dependencies so the Adobe Application runs in any linux distro. 
 
-Currently it's able to create a Photoshop appimage and a Substance Painter appimage.
+This was only possible thanks to @MiMillieuh amazing work [`MiMillieuh/Photoshop-CC2022-Linux`](https://github.com/MiMillieuh/Photoshop-CC2022-Linux)
 
+## Currently working applications
+| Version  | Wine | Rating |
+| ------------- | ------------- | ------------- |
+| Photoshop 2022 | 8.4 | Works almost like on Windows  |
+| Photoshop 2023 | 8.4 |Launches but gives some DXVK errors - the canvas doesnt show correctly |
+| Substance Painter 8.3.0 | 8.4 | Works perfectly |
 
-## Build
-
-Run `make help` to see how to use it. 
-
-It requires a functional Windows Virtual Machine present in your local network, named adobe.local, with Adobe Creative Cloud software properly running, able to download and install the applications in the Windows Virtual Machine `c:/Adobe` folder. 
+## Before building
+This Makefile requires a fully functional Windows Virtual Machine present in your local network, named `adobe.local`, with Adobe Creative Cloud software properly running, able to download and install the applications in the Windows Virtual Machine `c:/Adobe` folder. 
 
 The Windows Virtual Machine needs:
-  * isntall Windows 10 in your virtual machine, and use `adobe.local` as hostname and `game` as username. (the Makefile will try to login using `ssh game@adobe.local`)
-  * install Cygwin ssh server + rsync. [You can follow this tutorial to install ssh server](https://7thzero.com/blog/how-to-install-cygwin-and-configure-ssh). When selecting `ssh` in the cygwin installer, don't forget to also select `rsync`.
+
+  * install the latest Windows 10 in your virtual machine, and use `adobe.local` as hostname and `game` as main administrator username. (the Makefile will try to login using `ssh game@adobe.local`)
+
+  * install Cygwin ssh server + rsync. [You can follow this tutorial to install ssh server](https://7thzero.com/blog/how-to-install-cygwin-and-configure-ssh). When selecting `ssh` in the cygwin installer, don't forget to also select `rsync`. (I strong recommend setting up paswordless ssh login so the Makefile can run unnanted. Google for "Passwordless SSH Login" and you find plenty tutorials on how to do it)
+
   * install Adobe Creative Cloud from adobe.com website, login, set the installation folder for apps to `c:/Adobe` before installing what you want to pack as appimage.
 
+## Build
+Run `make help` to see how to use it. 
 
 ## How it works
-
 The Makefile downloads the latest `wine` version directly from WineHQ website. It downloads the Ubuntu 18.04 version, for maximum compatibility with other distros.
 
 It then uses the downloaded wine to run a variation of `MiMillieuh/Photoshop-CC2022-Linux` scripts, which creates the wineprefixes for the required application. 
@@ -29,10 +35,4 @@ Then it sets up an appimage folder based on the `appimage-template`, and creates
 
 Once it's finish, running the application.appimage should launch the Adobe Application correctly, in Linux. 
 
-# Currently working
 
-| Version  | Wine | Rating |
-| ------------- | ------------- | ------------- |
-| Photoshop 2022 | 8.4 | Works almost like on Windows  |
-| Photoshop 2023 | 8.4 |Launches but gives some DXVK errors - the canvas doesnt show correctly |
-| Substance Painter 8.3.0 | 8.4 | Works perfectly |
