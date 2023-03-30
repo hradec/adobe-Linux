@@ -1,7 +1,7 @@
 # Adobe-Linux
 This fork uses `make` to build self-contained appimages with wine+Adobe application and all the required dependencies so the Adobe Application runs in any linux distro. 
 
-This was only possible thanks to @MiMillieuh amazing work [`MiMillieuh/Photoshop-CC2022-Linux`](https://github.com/MiMillieuh/Photoshop-CC2022-Linux)
+This was only possible thanks to @MiMillieuh amazing work on [`MiMillieuh/Photoshop-CC2022-Linux`](https://github.com/MiMillieuh/Photoshop-CC2022-Linux)! Thanks man!! 
 
 ## Currently working applications
 | Version  | Wine | Rating |
