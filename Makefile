@@ -81,6 +81,7 @@ adobe-substance-painter-$(VERSION).appimage: checks checkVM build/wine/$(WINE_VE
 		rsync -avpP ./appimage-template/ ./build/appimage-adobe-substance-painter-$(VERSION)/
 		rsync -avpP ./scripts/run.sh ./build/appimage-adobe-photoshop-$(VERSION).$(SUBVERSION)/
 		chmod a+x ./build/appimage-adobe-photoshop-$(VERSION).$(SUBVERSION)/run.sh
+		rsync -avpP ./icons/substance.png ./build/appimage-adobe-photoshop-$(VERSION).$(SUBVERSION)/myapp.png
 		rsync -avpP --delete --delete-excluded ./build/wineprefix_substance/ ./build/appimage-adobe-substance-painter-$(VERSION)/wineprefix/
 		cat ./appimage-template/AppRun \
 			| sed 's/__APP__/substance/' \
@@ -104,6 +105,7 @@ adobe-photoshop-$(VERSION).$(SUBVERSION).appimage: checks checkVM build/wine/$(W
 		rsync -avpP ./appimage-template/ ./build/appimage-adobe-photoshop-$(VERSION).$(SUBVERSION)/
 		rsync -avpP ./scripts/run.sh ./build/appimage-adobe-photoshop-$(VERSION).$(SUBVERSION)/
 		chmod a+x ./build/appimage-adobe-photoshop-$(VERSION).$(SUBVERSION)/run.sh
+		rsync -avpP ./icons/photoshop.png ./build/appimage-adobe-photoshop-$(VERSION).$(SUBVERSION)/myapp.png
 		cat ./appimage-template/AppRun \
 			| sed 's/__APP__/photoshop/' \
 			| sed 's/__STUDIO__/$(STUDIO)/' \
