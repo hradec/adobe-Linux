@@ -5,7 +5,7 @@ This was only possible thanks to @MiMillieuh amazing work on [`MiMillieuh/Photos
 
 I know a lot of people hate appimages, but I find it perfect to pack functional windows application, together with the correct wine and dependencies so the application runs in any distro without the need to install anything!
 
-The cherry on the top is the use of fuse `unionfs` to re-mount the appimage as a writable folder, owned by the user running the appimage, so wine is happy with it's `wineprefix` ownership and permissions! 
+The cherry on the top, in my opnion, is the use of fuse `unionfs` to re-mount the appimage as a writable folder, owned by the user running the appimage, so wine is happy with it's `wineprefix` ownership and permissions! 
 
 Everything the application tries to write to the `wineprefix/drive_c` folder is written to an `$HOME/adobe-application` folder.
 
