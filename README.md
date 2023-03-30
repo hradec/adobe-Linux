@@ -31,7 +31,7 @@ Once it's finish, running the application.appimage should launch the Adobe Appli
 
 # Currently working
 
-| Version  | Using Wine Version | Rating |
+| Version  | Wine | Rating |
 | ------------- | ------------- | ------------- |
 | Photoshop 2022 | 8.4 | Works almost like on Windows  |
 | Photoshop 2023 | 8.4 |Launches but gives some DXVK errors - the canvas doesnt show correctly |
