@@ -59,6 +59,7 @@ checks:
 		exit -1
 	else
 		# force check of subversion
+		rm -rf /dev/shm/SUBVERSION
 		rm -rf ./build/Adobe\ Photoshop\ $(VERSION).$(SUBVERSION)/AMT/application.xml
 		# force rsync of wineprefix_photoshop to the appimage
 		rm -rf ./build/appimage-adobe-photoshop-$(VERSION).$(SUBVERSION)/wineprefix/system.reg
@@ -97,7 +98,7 @@ adobe-substance-painter-$(VERSION).appimage: checks checkVM build/wine/$(WINE_VE
 
 # create the phothoshop appimage
 photoshop: checks adobe-photoshop-$(VERSION).$(SUBVERSION).appimage
-adobe-photoshop-$(VERSION).$(SUBVERSION).appimage: checks checkVM build/wine/$(WINE_VERSION)/bin/wine64 /dev/shm/SUBVERSION build/appimage-adobe-photoshop-$(VERSION).$(SUBVERSION)/wineprefix/system.reg
+adobe-photoshop-$(VERSION).$(SUBVERSION).appimage: checks checkVM build/wine/$(WINE_VERSION)/bin/wine64 build/Adobe\ Photoshop\ $(VERSION).$(SUBVERSION)/AMT/application.xml build/appimage-adobe-photoshop-$(VERSION).$(SUBVERSION)/wineprefix/system.reg
 		@python3 -c "print('='*120)"
 		mkdir -p build/appimage-adobe-photoshop-$(VERSION).$(SUBVERSION)/wine
 		rsync -avpP ./build/wine/$(WINE_VERSION)/ ./build/appimage-adobe-photoshop-$(VERSION).$(SUBVERSION)/wine/$(WINE_VERSION)/
@@ -165,7 +166,7 @@ build/appimage-adobe-photoshop-$(VERSION).$(SUBVERSION)/wineprefix/system.reg: b
 	fi
 
 # pull all applications from adobe.local
-pullvm: checks build/AdobeSubstance3DPainter bbuild/Adobe\ Photoshop\ $(VERSION).$(SUBVERSION)/AMT/application.xml
+pullvm: checks build/AdobeSubstance3DPainter build/Adobe\ Photoshop\ $(VERSION).$(SUBVERSION)/AMT/application.xml
 # pull substance from adobe.local vm
 build/AdobeSubstance3DPainter:
 	rsync -avpP --no-perms --no-owner --no-group --delete --delete-excluded game@adobe.local:'/cygdrive/c/Adobe/Adobe\ Substance\ 3D\ Painter/'   ./build/AdobeSubstance3DPainter/
@@ -182,6 +183,9 @@ build/Adobe\ Photoshop\ $(VERSION).$(SUBVERSION)/AMT/application.xml: /dev/shm/S
 # cleanup stuff
 clean:
 	rm -rf build/.prepared
+	rm -rf build/allredist
+	rm -rf build/install
+	rm -rf build/Adobe\ Photoshop\ 2022\ Settings
 
 clean_folders: clean
 	rm -rf build/wineprefix_*
