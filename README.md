@@ -1,7 +1,13 @@
 # Adobe-Linux
-This fork uses `make` to build self-contained appimages with wine+Adobe application and all the required dependencies so the Adobe Application runs in any linux distro. 
+This fork of `MiMillieuh/Photoshop-CC2022-Linux` uses `make` to build self-contained appimages with wine+Adobe application and all the required dependencies so the Adobe Application runs in any linux distro. 
 
 This was only possible thanks to @MiMillieuh amazing work on [`MiMillieuh/Photoshop-CC2022-Linux`](https://github.com/MiMillieuh/Photoshop-CC2022-Linux)! Thanks man!! 
+
+I know a lot of people hate appimages, but I find it perfect to pack functional windows application, together with the correct wine and dependencies so the application runs in any distro without the need to install anything!
+
+The cherry on the top is the use of fuse `unionfs` to re-mount the appimage as a writable folder, owned by the user running the appimage, so wine is happy with it's `wineprefix` ownership and permissions! 
+
+Everything the application tries to write to the `wineprefix/drive_c` folder is written to an `$HOME/adobe-application` folder.
 
 ## Currently working applications
 | Version  | Wine | Rating |
@@ -34,5 +40,7 @@ After that is done, the Makefile uses `rsync` to copy over the installed applica
 Then it sets up an appimage folder based on the `appimage-template`, and creates the actual appimage file. 
 
 Once it's finish, running the application.appimage should launch the Adobe Application correctly, in Linux. 
+
+
 
 
